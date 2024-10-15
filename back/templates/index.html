@@ -1,0 +1,19 @@
+<!-- back/templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <p>Task Manager</p>
+    <form method="post" action="/submit-task">
+        <label for="task">Enter:</label><br>
+        <input type="text" id="task" name="task_name"><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

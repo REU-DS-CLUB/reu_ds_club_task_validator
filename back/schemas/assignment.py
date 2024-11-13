@@ -4,7 +4,7 @@ from typing import Optional
 
 class AssignmentBase(BaseModel):
     task_id: int
-    telegram_login: str
+    tg_id: str
     mark: Optional[int] = None
     status: Optional[str] = None
     error_message: Optional[str] = None

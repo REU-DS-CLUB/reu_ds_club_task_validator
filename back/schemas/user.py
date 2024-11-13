@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 
 class UserBase(BaseModel):
-    telegram_login: str
+    tg_id: str
     available_tasks: str
 
 class UserCreate(UserBase):

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from .models import User, Task, Assignment
 
-def get_user(db: Session, telegram_login: str):
-    return db.query(User).filter(User.telegram_login == telegram_login).first()
+def get_user(db: Session, tg_id: str):
+    return db.query(User).filter(User.tg_id == tg_id).first()
 
 def create_user(db: Session, user: User):
     db.add(user)

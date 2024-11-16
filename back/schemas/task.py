@@ -11,13 +11,14 @@ class TaskBase(BaseModel):
 
     @validator('task_status')
     def validate_task_status(cls, v):
-        allowed_statuses = ["prod", "test", "deleted"]
+        allowed_statuses = ["prod", "test", "deleted", "Pending", "Completed", "In Progress"]
         if v not in allowed_statuses:
             raise ValueError(f"Invalid task_status: {v}. Must be one of {allowed_statuses}")
         return v
 
     class Config:
         orm_mode = True
+
 
 class TaskCreate(TaskBase):
     pass

@@ -1,0 +1,10 @@
+fastapi==0.95.0
+uvicorn==0.22.0
+pydantic==1.10.9  # Specify a compatible version
+httpx==0.24.0
+sqlalchemy==1.4.47
+databases==0.6.0
+python-multipart==0.0.6
+aiofiles==0.8.0
+psycopg2-binary
+jinja2==3.1.2

@@ -2,14 +2,14 @@ from fastapi import FastAPI
 from starlette.requests import Request
 from back.database import engine
 from back.models import Base
-from back.handlers.handlers import router
 from fastapi.templating import Jinja2Templates
+from back.handlers import router as handlers_router
 
 app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
+app.include_router(handlers_router)
 
-app.include_router(router)
+Base.metadata.create_all(bind=engine)
 
 templates = Jinja2Templates(directory="back/templates")
 

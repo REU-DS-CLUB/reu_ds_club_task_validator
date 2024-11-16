@@ -24,13 +24,16 @@ class Task(Base):
     task_data = Column(String)
     requirements = Column(String)
 
+    # Relationship to Assignment
+    assignments = relationship("Assignment", back_populates="task")
+
 class Assignment(Base):
     __tablename__ = "assignments"
 
     assignment_id = Column(Integer, primary_key=True, autoincrement=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    task_id = Column(Integer, ForeignKey('tasks.task_id'))
-    tg_id = Column(String, ForeignKey('users.tg_id'))
+    task_id = Column(Integer, ForeignKey("tasks.task_id"))
+    tg_id = Column(String, ForeignKey("users.tg_id"))
     mark = Column(Integer)
     status = Column(String)
     error_message = Column(String)
@@ -38,6 +41,3 @@ class Assignment(Base):
 
     user = relationship("User", back_populates="assignments")
     task = relationship("Task", back_populates="assignments")
-
-User.assignments = relationship("Assignment", back_populates="user")
-Task.assignments = relationship("Assignment", back_populates="task")

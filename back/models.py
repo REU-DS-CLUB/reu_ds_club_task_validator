@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, Enum, CheckConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -9,22 +9,21 @@ class User(Base):
     tg_id = Column(String, primary_key=True)
     username = Column(String, unique=True)
     auth_timestamp = Column(DateTime, default=datetime.utcnow)
-    available_tasks = Column(String, default="[1]")  
     assignments = relationship("Assignment", back_populates="user")
-
 
 class Task(Base):
     __tablename__ = "tasks"
 
     task_id = Column(Integer, primary_key=True, autoincrement=True)
-    task_name = Column(String)
-    task_status = Column(String)
-    task_description = Column(String)
+    task_name = Column(String, nullable=False)
+    task_status = Column(Enum("prod", "test", "deleted", name="task_status_enum"), nullable=False)
+    task_description = Column(Text)
     task_type = Column(String)
     task_data = Column(String)
-    requirements = Column(String)
+    requirements = Column(Text)
+    task_data_admin = Column(String)
+    check_solution_file = Column(String)
 
-    # Relationship to Assignment
     assignments = relationship("Assignment", back_populates="task")
 
 class Assignment(Base):
@@ -32,11 +31,11 @@ class Assignment(Base):
 
     assignment_id = Column(Integer, primary_key=True, autoincrement=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    task_id = Column(Integer, ForeignKey("tasks.task_id"))
-    tg_id = Column(String, ForeignKey("users.tg_id"))
-    mark = Column(Integer)
-    status = Column(String)
-    error_message = Column(String)
+    task_id = Column(Integer, ForeignKey("tasks.task_id"), nullable=False)
+    tg_id = Column(String, ForeignKey("users.tg_id"), nullable=False)
+    mark = Column(Integer, CheckConstraint("mark >= 0 AND mark <= 100"), nullable=True)
+    status = Column(Enum("ok", "error", name="assignment_status_enum"), nullable=False)
+    error_message = Column(Text)
     assignment_file = Column(String)
 
     user = relationship("User", back_populates="assignments")

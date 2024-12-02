@@ -5,20 +5,20 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/users/": {
+    "/users/get_users": {
       "get": {
         "tags": [
-          "Users"
+          "users"
         ],
         "summary": "Read Users",
-        "operationId": "read_users_users__get",
+        "operationId": "read_users_users_get_users_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Read Users Users  Get",
+                  "title": "Response Read Users Users Get Users Get",
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/User"
@@ -28,13 +28,15 @@
             }
           }
         }
-      },
+      }
+    },
+    "/users/add_user": {
       "post": {
         "tags": [
-          "Users"
+          "users"
         ],
-        "summary": "Create User Handler",
-        "operationId": "create_user_handler_users__post",
+        "summary": "Add User",
+        "operationId": "add_user_users_add_user_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -51,7 +53,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "title": "Response Add User Users Add User Post",
+                  "type": "object"
                 }
               }
             }
@@ -69,20 +72,63 @@
         }
       }
     },
-    "/tasks/": {
+    "/users/is_newbie/{tg_id}": {
       "get": {
         "tags": [
-          "Tasks"
+          "users"
         ],
-        "summary": "Read Tasks",
-        "operationId": "read_tasks_tasks__get",
+        "summary": "Is Newbie",
+        "operationId": "is_newbie_users_is_newbie__tg_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Tg Id",
+              "type": "string"
+            },
+            "name": "tg_id",
+            "in": "path"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Response Read Tasks Tasks  Get",
+                  "title": "Response Is Newbie Users Is Newbie  Tg Id  Get",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/get_tasks": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Read Tasks",
+        "operationId": "read_tasks_tasks_get_tasks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Read Tasks Tasks Get Tasks Get",
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Task"
@@ -92,13 +138,57 @@
             }
           }
         }
-      },
+      }
+    },
+    "/tasks/get_task/{task_id}": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Read Task",
+        "operationId": "read_task_tasks_get_task__task_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "integer"
+            },
+            "name": "task_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/create_task": {
       "post": {
         "tags": [
-          "Tasks"
+          "tasks"
         ],
-        "summary": "Create Task",
-        "operationId": "create_task_tasks__post",
+        "summary": "Create Task Handler",
+        "operationId": "create_task_handler_tasks_create_task_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -133,13 +223,13 @@
         }
       }
     },
-    "/tasks/{task_id}": {
+    "/tasks/edit_task/{task_id}": {
       "put": {
         "tags": [
-          "Tasks"
+          "tasks"
         ],
-        "summary": "Update Task Handler",
-        "operationId": "update_task_handler_tasks__task_id__put",
+        "summary": "Update Task",
+        "operationId": "update_task_tasks_edit_task__task_id__put",
         "parameters": [
           {
             "required": true,
@@ -188,7 +278,7 @@
     "/assignments/": {
       "get": {
         "tags": [
-          "Assignments"
+          "assignments"
         ],
         "summary": "Read Assignments",
         "operationId": "read_assignments_assignments__get",
@@ -208,13 +298,15 @@
             }
           }
         }
-      },
+      }
+    },
+    "/assignments/submit_assignment": {
       "post": {
         "tags": [
-          "Assignments"
+          "assignments"
         ],
-        "summary": "Create Assignment Handler",
-        "operationId": "create_assignment_handler_assignments__post",
+        "summary": "Submit Assignment",
+        "operationId": "submit_assignment_assignments_submit_assignment_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -231,7 +323,151 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "title": "Response Submit Assignment Assignments Submit Assignment Post",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignments/{assignment_id}": {
+      "get": {
+        "tags": [
+          "assignments"
+        ],
+        "summary": "Read Assignment",
+        "operationId": "read_assignment_assignments__assignment_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Assignment Id",
+              "type": "integer"
+            },
+            "name": "assignment_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
                   "$ref": "#/components/schemas/Assignment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignments/results/{tg_id}": {
+      "get": {
+        "tags": [
+          "assignments"
+        ],
+        "summary": "Get Best Results",
+        "operationId": "get_best_results_assignments_results__tg_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Tg Id",
+              "type": "string"
+            },
+            "name": "tg_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Best Results Assignments Results  Tg Id  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Assignment"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assignments/assignments/{task_id}/{tg_id}": {
+      "get": {
+        "tags": [
+          "assignments"
+        ],
+        "summary": "Get User Assignments By Task",
+        "operationId": "get_user_assignments_by_task_assignments_assignments__task_id___tg_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "integer"
+            },
+            "name": "task_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Tg Id",
+              "type": "string"
+            },
+            "name": "tg_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get User Assignments By Task Assignments Assignments  Task Id   Tg Id  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Assignment"
+                  }
                 }
               }
             }
@@ -258,7 +494,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+
+                }
               }
             }
           }
@@ -273,7 +511,6 @@
         "required": [
           "task_id",
           "tg_id",
-          "assignment_id",
           "timestamp"
         ],
         "type": "object",
@@ -302,10 +539,6 @@
             "title": "Assignment File",
             "type": "string"
           },
-          "assignment_id": {
-            "title": "Assignment Id",
-            "type": "integer"
-          },
           "timestamp": {
             "title": "Timestamp",
             "type": "string",
@@ -316,13 +549,30 @@
       "AssignmentBase": {
         "title": "AssignmentBase",
         "required": [
-          "assignment_id"
+          "assignment_id",
+          "task_id"
         ],
         "type": "object",
         "properties": {
           "assignment_id": {
             "title": "Assignment Id",
             "type": "integer"
+          },
+          "task_id": {
+            "title": "Task Id",
+            "type": "integer"
+          },
+          "mark": {
+            "title": "Mark",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "error_message": {
+            "title": "Error Message",
+            "type": "string"
           }
         }
       },
@@ -410,6 +660,14 @@
             "title": "Requirements",
             "type": "string"
           },
+          "task_data_admin": {
+            "title": "Task Data Admin",
+            "type": "string"
+          },
+          "check_solution_file": {
+            "title": "Check Solution File",
+            "type": "string"
+          },
           "task_id": {
             "title": "Task Id",
             "type": "integer"
@@ -451,6 +709,14 @@
           "requirements": {
             "title": "Requirements",
             "type": "string"
+          },
+          "task_data_admin": {
+            "title": "Task Data Admin",
+            "type": "string"
+          },
+          "check_solution_file": {
+            "title": "Check Solution File",
+            "type": "string"
           }
         }
       },
@@ -481,6 +747,14 @@
           "requirements": {
             "title": "Requirements",
             "type": "string"
+          },
+          "task_data_admin": {
+            "title": "Task Data Admin",
+            "type": "string"
+          },
+          "check_solution_file": {
+            "title": "Check Solution File",
+            "type": "string"
           }
         }
       },
@@ -488,22 +762,24 @@
         "title": "User",
         "required": [
           "tg_id",
-          "available_tasks",
           "auth_timestamp"
         ],
         "type": "object",
         "properties": {
           "tg_id": {
             "title": "Tg Id",
-            "type": "string"
+            "type": "string",
+            "description": "Идентификатор пользователя в Telegram (tg_id)"
           },
-          "available_tasks": {
-            "title": "Available Tasks",
-            "type": "string"
+          "username": {
+            "title": "Username",
+            "type": "string",
+            "description": "Уникальное имя пользователя в системе"
           },
           "auth_timestamp": {
             "title": "Auth Timestamp",
             "type": "string",
+            "description": "Время, когда пользователь начал взаимодействовать с ботом",
             "format": "date-time"
           },
           "assignments": {
@@ -512,6 +788,7 @@
             "items": {
               "$ref": "#/components/schemas/AssignmentBase"
             },
+            "description": "Список заданий, связанных с пользователем",
             "default": []
           }
         }
@@ -519,18 +796,19 @@
       "UserCreate": {
         "title": "UserCreate",
         "required": [
-          "tg_id",
-          "available_tasks"
+          "tg_id"
         ],
         "type": "object",
         "properties": {
           "tg_id": {
             "title": "Tg Id",
-            "type": "string"
+            "type": "string",
+            "description": "Идентификатор пользователя в Telegram (tg_id)"
           },
-          "available_tasks": {
-            "title": "Available Tasks",
-            "type": "string"
+          "username": {
+            "title": "Username",
+            "type": "string",
+            "description": "Уникальное имя пользователя в системе"
           }
         }
       },

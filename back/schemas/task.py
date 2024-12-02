@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator
+# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing import Optional
 
 class TaskBase(BaseModel):
@@ -8,16 +9,19 @@ class TaskBase(BaseModel):
     task_type: str
     task_data: str
     requirements: str
+    task_data_admin: Optional[str]
+    check_solution_file: Optional[str]
 
     @validator('task_status')
     def validate_task_status(cls, v):
-        allowed_statuses = ["prod", "test", "deleted", "Pending", "Completed", "In Progress"]
+        allowed_statuses = ["prod", "test", "deleted"]
         if v not in allowed_statuses:
             raise ValueError(f"Invalid task_status: {v}. Must be one of {allowed_statuses}")
         return v
 
     class Config:
         orm_mode = True
+
 
 
 class TaskCreate(TaskBase):
@@ -30,16 +34,24 @@ class TaskUpdate(BaseModel):
     task_type: Optional[str] = None
     task_data: Optional[str] = None
     requirements: Optional[str] = None
+    task_data_admin: Optional[str] = None
+    check_solution_file: Optional[str] = None
 
     @validator('task_status')
     def validate_task_status(cls, v):
+        if v is None:
+            return v
         allowed_statuses = ["prod", "test", "deleted"]
-        if v is not None and v not in allowed_statuses:
+        if v not in allowed_statuses:
             raise ValueError(f"Invalid task_status: {v}. Must be one of {allowed_statuses}")
         return v
+
 
     class Config:
         orm_mode = True
 
 class Task(TaskBase):
     task_id: int
+
+    class Config:
+        orm_mode = True

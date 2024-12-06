@@ -6,13 +6,7 @@ from aiogram.fsm.context import FSMContext
 from bot.utils.states_forms import SendTaskSteps, StartStep, ProfileStep
 from bot.keyboards.keyboards import keyboard_profile, keyboard_start
 
-import time
-
 router = Router()
-
-ids = {"id1": "data1", "id2": "data2"}
-
-hi_ans = ""
 
 
 @router.message(Command("start"))

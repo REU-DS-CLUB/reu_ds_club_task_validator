@@ -6,17 +6,21 @@ from aiogram.fsm.context import FSMContext
 from bot.utils.states_forms import SendTaskSteps, StartStep, ProfileStep
 from bot.keyboards.keyboards import keyboard_profile, keyboard_start
 
+from bot.utils.requests import is_newbie, add_user
+
 router = Router()
 
 
 @router.message(Command("start"))
 async def get_start(message: Message, state: FSMContext) -> None:
     """Приветственное сообщение"""
+    await is_newbie(str(message.from_user.id))
+    await add_user(str(message.from_user.id), str(message.from_user.username))
+
     if message.from_user.username is not None:
         answer = f"Привет, {message.from_user.username}!\n"
     else:
         answer = "Привет!\n"
-
     answer += "Это бот для проверки твоих зданий по мл школе от REU DS Club"
 
     await message.answer(text=answer, reply_markup=keyboard_start())

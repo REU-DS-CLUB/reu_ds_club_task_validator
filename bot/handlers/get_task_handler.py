@@ -6,12 +6,15 @@ from bot.utils.states_forms import StartStep, ProfileStep, SendTaskSteps
 from bot.keyboards.keyboards import keyboard_start
 import time
 
+from bot.utils.requests import submit_assignment
+
 router = Router()
 
 
 @router.message(SendTaskSteps.GET_TASK_NUMBER)
 async def get_task_number(message: Message, state: FSMContext) -> None:
     if message.text.isdigit() and int(message.text) > 0:
+        await state.update_data(task_id=message.text)
         await message.answer("Пришли файлик со своим решением")
         await state.set_state(SendTaskSteps.GET_TASK_FILE)
     else:
@@ -24,6 +27,11 @@ async def get_task_file(message: Message, bot: Bot, state: FSMContext) -> None:
     if message.document:
         answer = "💨Обрабатываю ваш запрос..."
         temp_message = await message.reply(answer)
+        data = await state.get_data()
+        # возможно документ стоит сначало скачать в папку
+        await submit_assignment(task_id=int(data["task_id"]),
+                                tg_id=str(message.from_user.id),
+                                assignment_file=message.document)
         time.sleep(5)
         await bot.delete_message(chat_id=message.chat.id,
                                  message_id=temp_message.message_id)

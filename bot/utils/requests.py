@@ -31,7 +31,7 @@ class Assignments(NamedTuple):
     timestamp: str
 
 
-FAST_API_URL = "http://84.201.145.135:8000"
+FAST_API_URL = "http://fastapi_network:8000"
 headers = {
     'accept': 'application/json',
 }
@@ -40,7 +40,7 @@ headers = {
 async def is_newbie(tg_id: str):
     response = requests.get(f"{FAST_API_URL}/users/is_newbie/{tg_id}", headers=headers)
     answer = response.json()
-    print(answer)
+    return answer
 
 
 async def add_user(tg_id: str, username: str):
@@ -53,13 +53,14 @@ async def add_user(tg_id: str, username: str):
         print("Запрос успешен!")
     else:
         print(f"Произошла ошибка: {response.text}")
+    return response.status_code
 
 
 async def get_tasks():
     response = requests.get(f"{FAST_API_URL}/tasks/get_tasks", headers=headers)
     answer = response.json()
-    print(answer)
-    # return [Task(**ans) for ans in answer]
+    # print(answer)
+    return [Task(**ans) for ans in answer]
 
 
 async def get_task(task_id):
@@ -67,10 +68,10 @@ async def get_task(task_id):
     data = {}
     if response.status_code == 200:
         data = response.json()
-        print(Task(**data))
-    else:
-        print(f"Произошла ошибка: {response.text}")
-    # return data
+        # print(Task(**data))
+    # else:
+    #     print(f"Произошла ошибка: {response.text}")
+    return data
 
 
 async def submit_assignment(task_id: int, tg_id: str, mark: int, status: str,
@@ -85,10 +86,11 @@ async def submit_assignment(task_id: int, tg_id: str, mark: int, status: str,
     }
 
     response = requests.post(f"{FAST_API_URL}/assignments/submit_assignment", json=data)
-    if response.status_code == 200:
-        print("Запрос успешен!")
-    else:
-        print(f"Произошла ошибка: {response.text}")
+    # if response.status_code == 200:
+    #     print("Запрос успешен!")
+    # else:
+    #     print(f"Произошла ошибка: {response.text}")
+    return response.status_code
 
 
 async def get_assignment(assignment_id: int):
@@ -96,9 +98,9 @@ async def get_assignment(assignment_id: int):
     data = {}
     if response.status_code == 200:
         data = response.json()
-        print(Assignments(**data))
-    else:
-        print(f"Произошла ошибка: {response.text}")
+    #     print(Assignments(**data))
+    # else:
+    #     print(f"Произошла ошибка: {response.text}")
     return data
 
 
@@ -107,9 +109,9 @@ async def get_best_assignment(tg_id: str):
     data = {}
     if response.status_code == 200:
         data = response.json()
-        print(Assignments(**data))
-    else:
-        print(f"Произошла ошибка: {response.text}")
+    #     print(Assignments(**data))
+    # else:
+    #     print(f"Произошла ошибка: {response.text}")
     return data
 
 
@@ -118,6 +120,7 @@ async def get_user_assignments_by_task(task_id: int, tg_id: str):
     data = {}
     if response.status_code == 200:
         data = response.json()
-        print(Assignments(**data))
-    else:
-        print(f"Произошла ошибка: {response.text}")
+    #     print(Assignments(**data))
+    # else:
+    #     print(f"Произошла ошибка: {response.text}")
+    return data

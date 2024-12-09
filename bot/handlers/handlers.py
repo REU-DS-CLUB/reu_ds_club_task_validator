@@ -14,8 +14,10 @@ router = Router()
 @router.message(Command("start"))
 async def get_start(message: Message, state: FSMContext) -> None:
     """Приветственное сообщение"""
-    await is_newbie(str(message.from_user.id))
-    await add_user(str(message.from_user.id), str(message.from_user.username))
+    ans_is_newbie = await is_newbie(str(message.from_user.id))
+    await message.answer(ans_is_newbie)
+    ans_add_user = await add_user(str(message.from_user.id), str(message.from_user.username))
+    await message.answer(ans_add_user)
 
     if message.from_user.username is not None:
         answer = f"Привет, {message.from_user.username}!\n"

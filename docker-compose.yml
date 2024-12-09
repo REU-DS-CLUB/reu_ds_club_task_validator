@@ -13,6 +13,8 @@ services:
       - "5432:5432"  
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-U", "username" ]
     networks:
       - fastapi_network
 
@@ -29,9 +31,25 @@ services:
     volumes:
       - .:/app  
     depends_on:
-      - db  
+      db:
+        condition: service_healthy
     networks:
       - fastapi_network
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile_bot
+    ports:
+      - "8500:8500"
+    depends_on:
+      db:
+        condition: service_healthy
+      app:
+        condition: service_started
+    networks:
+      - fastapi_network
+
 
 volumes:
   postgres_data:  

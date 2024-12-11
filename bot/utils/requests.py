@@ -31,7 +31,7 @@ class Assignments(NamedTuple):
     timestamp: str
 
 
-FAST_API_URL = "http://fastapi_network:8000"
+FAST_API_URL = "http://127.0.0.1:8000"
 headers = {
     'accept': 'application/json',
 }

@@ -1,10 +1,12 @@
 import asyncio
 from aiogram import Bot, Dispatcher
+import os
 
 from bot.keyboards.keyboards import keyboard_start
 from bot.handlers import handlers, default_handler, profile_handler, get_task_handler
 dp = Dispatcher()
-bot = Bot(token="")
+
+bot = Bot(token=os.getenv("BOT_TOKEN"))
 
 
 async def start():

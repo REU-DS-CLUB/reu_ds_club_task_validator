@@ -1,5 +1,4 @@
 from pydantic import BaseModel, validator
-# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing import Optional
 
 class TaskBase(BaseModel):

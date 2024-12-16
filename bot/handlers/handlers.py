@@ -6,9 +6,10 @@ from aiogram.fsm.context import FSMContext
 from bot.utils.states_forms import SendTaskSteps, StartStep, ProfileStep
 from bot.keyboards.keyboards import keyboard_profile, keyboard_start
 
+from bot.utils.get_username import get_username
 from bot.utils.requests import is_newbie, add_user
 
-from bot.text_bot import INFORMATION
+from bot.text_bot import FULL_INFORMATION, INSTRUCTION
 
 router = Router()
 
@@ -19,13 +20,14 @@ async def get_start(message: Message, state: FSMContext) -> None:
     ans_is_newbie = await is_newbie(str(message.from_user.id))
     if ans_is_newbie:
         ans_add_user = await add_user(str(message.from_user.id), str(message.from_user.username))
-        await message.answer(str(ans_add_user))
+        await message.answer(f"ans_add_user: {str(ans_add_user)}")
 
-    if message.from_user.username is not None:
-        answer = f"Привет, {message.from_user.username}!\n"
+    username = await get_username(message)
+    if username is not None:
+        answer = f"Привет, {username}!\n\n"
     else:
-        answer = "Привет!\n"
-    answer += "Это бот для проверки твоих зданий по мл школе от REU DS Club"
+        answer = "Привет!\n\n"
+    answer += INSTRUCTION
 
     await message.answer(text=answer, reply_markup=keyboard_start())
     await state.set_state(StartStep.MAIN)
@@ -35,12 +37,10 @@ async def get_start(message: Message, state: FSMContext) -> None:
 async def profile(message: Message, state: FSMContext) -> None:
     """Возврат в профиль пользователя"""
     answer = "Профиль "
-    if message.from_user.first_name is not None:
-        answer += str(message.from_user.first_name)
-        if message.from_user.last_name is not None:
-            answer += f" {message.from_user.last_name}"
-    elif message.from_user.username is not None:
-        answer += str(message.from_user.username)
+
+    username = await get_username(message)
+    if username is not None:
+        answer += username
     else:
         answer += "пользователя"
 
@@ -58,10 +58,4 @@ async def send_task(message: Message, state: FSMContext) -> None:
 @router.message(StartStep.MAIN and F.text == "Информация")
 async def get_information(message: Message) -> None:
     """Информация по боту"""
-    await message.answer(INFORMATION)
-
-
-# @router.message(StartStep.MAIN)
-# async def cases_ids(message: Message, state: FSMContext) -> None:
-#     """Вывод название кейсов и их айдишки"""
-#     await message.answer(text="хммм", reply_markup=keyboard_start())
+    await message.answer(FULL_INFORMATION)

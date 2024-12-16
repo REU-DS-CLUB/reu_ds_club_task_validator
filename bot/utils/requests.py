@@ -49,10 +49,6 @@ async def add_user(tg_id: str, username: str):
         "username": username
     }
     response = requests.post(f"{FAST_API_URL}/users/add_user", json=data)
-    if response.status_code == 200:
-        print("Запрос успешен!")
-    else:
-        print(f"Произошла ошибка: {response.text}")
     return response.status_code
 
 
@@ -75,41 +71,14 @@ async def submit_assignment(task_id: int, tg_id: str, assignment_file: str) -> i
     }
 
     response = requests.post(f"{FAST_API_URL}/assignments/submit_assignment", json=data)
-    # if response.status_code == 200:
-    #     print("Запрос успешен!")
-    # else:
-    #     print(f"Произошла ошибка: {response.text}")
     return response.status_code
 
 
-async def get_assignment(assignment_id: int):
-    response = requests.get(f"{FAST_API_URL}/assignments/{assignment_id}", headers=headers)
-    data = {}
-    if response.status_code == 200:
-        data = response.json()
-    #     print(Assignments(**data))
-    # else:
-    #     print(f"Произошла ошибка: {response.text}")
-    return data
+async def get_assignments(task_id: int, tg_id: str):
+    response = requests.get(f"{FAST_API_URL}/assignments/get_assignments/{task_id}/{tg_id}", headers=headers)
+    return response
 
 
-async def get_best_assignment(tg_id: str):
-    response = requests.get(f"{FAST_API_URL}/assignments/results/{tg_id}", headers=headers)
-    data = {}
-    if response.status_code == 200:
-        data = response.json()
-    #     print(Assignments(**data))
-    # else:
-    #     print(f"Произошла ошибка: {response.text}")
-    return data
-
-
-async def get_user_assignments_by_task(task_id: int, tg_id: str):
-    response = requests.get(f"{FAST_API_URL}/assignments/assignments/{task_id}/{tg_id}", headers=headers)
-    data = {}
-    if response.status_code == 200:
-        data = response.json()
-    #     print(Assignments(**data))
-    # else:
-    #     print(f"Произошла ошибка: {response.text}")
-    return data
+async def get_results(tg_id: str):
+    response = requests.get(f"{FAST_API_URL}/assignments/get_results/{tg_id}", headers=headers)
+    return response

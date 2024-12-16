@@ -8,8 +8,7 @@ from bot.handlers import handlers, default_handler, profile_handler, get_task_ha
 from bot.text_bot import BOT_DESCRIPTION
 dp = Dispatcher()
 
-# bot = Bot(token=os.getenv("BOT_TOKEN"))
-bot = Bot(token="7179844058:AAH8Sfk8Dy5KVnDSUhohVWY04azKg_2iebQ")
+bot = Bot(token=os.getenv("BOT_TOKEN"))
 
 
 async def start():

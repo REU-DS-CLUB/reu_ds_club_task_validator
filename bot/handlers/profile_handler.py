@@ -5,7 +5,8 @@ from aiogram.fsm.context import FSMContext
 from bot.utils.states_forms import StartStep, ProfileStep
 from bot.keyboards.keyboards import keyboard_start, keyboard_profile
 
-from bot.utils.requests import get_tasks, get_task
+from bot.utils.requests import get_tasks, get_task, get_results, get_assignments
+
 router = Router()
 
 
@@ -39,7 +40,7 @@ async def send_case_info(message: Message, state: FSMContext) -> None:
         await state.set_state(ProfileStep.PROFILE)
 
 
-@router.message(ProfileStep.PROFILE and F.text == "Мои результаты")
+@router.message(ProfileStep.PROFILE and F.text == "Мои решения по заданию")
 async def cases_ids(message: Message, state: FSMContext) -> None:
     """Вывод название кейсов и их айдишки"""
     await message.answer(text="Пришли номер задания")
@@ -49,8 +50,12 @@ async def cases_ids(message: Message, state: FSMContext) -> None:
 @router.message(ProfileStep.GET_TASK_STAT)
 async def cases_ids(message: Message, state: FSMContext) -> None:
     if message.text and message.text.isdigit() and int(message.text.isdigit()) > 0:
-
-        await message.answer(text=f"Номер задания {message.text}")
+        response = await get_assignments(task_id=int(message.text), tg_id=str(message.from_user.id))
+        if response.status_code == 200:
+            data = response.json()
+            await message.answer(text=str(data))
+        else:
+            await message.answer(f"Произошла ошибка: {response.text}")
         await state.set_state(ProfileStep.PROFILE)
     else:
         await message.answer(text="Неверные входные данные",
@@ -63,3 +68,14 @@ async def cases_ids(message: Message, state: FSMContext) -> None:
     """Вывод название кейсов и их айдишки"""
     await message.answer(text="Главная", reply_markup=keyboard_start())
     await state.set_state(StartStep.MAIN)
+
+
+@router.message(ProfileStep.PROFILE and F.text == "Мои результаты")
+async def cases_ids(message: Message) -> None:
+    """Вывод название кейсов и их айдишки"""
+    response = await get_results(tg_id=str(message.from_user.id))
+    if response.status_code == 200:
+        data = response.json()
+        await message.answer(text=str(data))
+    else:
+        await message.answer(f"Произошла ошибка: {response.text}")

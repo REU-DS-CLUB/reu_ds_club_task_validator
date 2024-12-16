@@ -34,7 +34,7 @@ async def get_task_file(message: Message, bot: Bot, state: FSMContext) -> None:
         tg_id = str(message.from_user.id)
 
         doc_type = message.document.file_name.split('.')[-1]
-        file_id = message.document.file_unique_id
+        file_id = message.document.file_id
         file = await bot.get_file(file_id)
         file_holder = f"{os.path.dirname(os.path.abspath(__file__))}\\user_docs\\"
         path = f"{file_holder}{str(file_id)}.{doc_type}"

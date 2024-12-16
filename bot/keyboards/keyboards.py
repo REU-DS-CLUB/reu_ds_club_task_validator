@@ -15,15 +15,8 @@ def keyboard_start():
 
 def keyboard_profile():
     kb = [
-        [KeyboardButton(text="Список заданий")],
-        [KeyboardButton(text="Информация по заданию")],
-        [KeyboardButton(text="Мои результаты")],
+        [KeyboardButton(text="Список заданий"), KeyboardButton(text="Информация по заданию")],
+        [KeyboardButton(text="Мои результаты"), KeyboardButton(text="Мои решения по заданию")],
         [KeyboardButton(text="Назад")]
     ]
     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)
-
-# def keyboard_cancel():
-#     kb = [
-#         [KeyboardButton(text="Назад")]
-#     ]
-#     return ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True)

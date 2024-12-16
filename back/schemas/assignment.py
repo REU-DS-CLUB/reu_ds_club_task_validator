@@ -26,7 +26,7 @@ class AssignmentCreate(AssignmentBase):
     pass
 
 class Assignment(AssignmentBase):
-    # assignment_id: int
+    assignment_id: int
     timestamp: datetime
 
     class Config:

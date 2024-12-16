@@ -21,7 +21,7 @@ async def read_task(task_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Task not found")
     return task
 
-@router.post("/create_task", response_model=TaskSchema)
+@router.post("/add_task", response_model=TaskSchema)
 async def create_task_handler(task: TaskCreate, db: Session = Depends(get_db)):
     try:
         print(task)

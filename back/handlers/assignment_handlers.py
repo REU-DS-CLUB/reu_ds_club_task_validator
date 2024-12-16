@@ -26,14 +26,14 @@ async def submit_assignment(assignment: AssignmentCreate, db: Session = Depends(
     except Exception as e:
         return {"is_ok": False, "err_message": str(e)}
 
-@router.get("/{assignment_id}", response_model=AssignmentSchema)
+@router.get("/get_assignment/{assignment_id}", response_model=AssignmentSchema)
 async def read_assignment(assignment_id: int, db: Session = Depends(get_db)):
     assignment = db.query(AssignmentModel).filter(AssignmentModel.assignment_id == assignment_id).first()
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
     return assignment
 
-@router.get("/results/{tg_id}", response_model=list[AssignmentSchema])
+@router.get("/get_results/{tg_id}", response_model=list[AssignmentSchema])
 async def get_best_results(tg_id: str, db: Session = Depends(get_db)):
     try:
         subquery = (
@@ -76,8 +76,7 @@ async def get_best_results(tg_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving best results: {str(e)}")
 
-
-@router.get("/assignments/{task_id}/{tg_id}", response_model=list[AssignmentSchema])
+@router.get("/get_assignments/{task_id}/{tg_id}", response_model=list[AssignmentSchema])
 async def get_user_assignments_by_task(task_id: int, tg_id: str, db: Session = Depends(get_db)):
     try:
         assignments = (

@@ -7,7 +7,7 @@ class User(Base):
     __tablename__ = "users"
 
     tg_id = Column(String, primary_key=True)
-    username = Column(String, unique=True)
+    username = Column(String, unique=True, nullable=False)
     auth_timestamp = Column(DateTime, default=datetime.utcnow)
     assignments = relationship("Assignment", back_populates="user")
 

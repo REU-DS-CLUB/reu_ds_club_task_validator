@@ -9,7 +9,11 @@ readme = "README.md"
 python = "^3.12"
 aiogram = "^3.13.1"
 requests = "^2.32.3"
+yara-python = "^4.5.1"
 
+
+[tool.poetry.group.dev.dependencies]
+setuptools = "^75.6.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -4,6 +4,7 @@ from bot.keyboards.keyboards import keyboard_start
 
 router = Router()
 
+
 @router.message()
 async def get_start(message: Message) -> None:
     """Дефолтный ответ"""

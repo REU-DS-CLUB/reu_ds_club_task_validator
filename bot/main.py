@@ -4,9 +4,12 @@ import os
 
 from bot.keyboards.keyboards import keyboard_start
 from bot.handlers import handlers, default_handler, profile_handler, get_task_handler
+
+from bot.text_bot import BOT_DESCRIPTION
 dp = Dispatcher()
 
-bot = Bot(token=os.getenv("BOT_TOKEN"))
+# bot = Bot(token=os.getenv("BOT_TOKEN"))
+bot = Bot(token="7179844058:AAH8Sfk8Dy5KVnDSUhohVWY04azKg_2iebQ")
 
 
 async def start():
@@ -19,6 +22,7 @@ async def start():
             default_handler.router
         )
         await bot.delete_webhook(drop_pending_updates=True)
+        await bot.set_my_description(BOT_DESCRIPTION)
         await dp.start_polling(bot)
 
     finally:

@@ -8,6 +8,7 @@ class StartStep(StatesGroup):
 class ProfileStep(StatesGroup):
     PROFILE = State()
     GET_TASK_STAT = State()
+    GET_TASK_INFO = State()
 
 
 class SendTaskSteps(StatesGroup):

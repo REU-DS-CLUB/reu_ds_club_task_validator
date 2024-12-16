@@ -37,10 +37,10 @@ headers = {
 }
 
 
-async def is_newbie(tg_id: str):
+async def is_newbie(tg_id: str) -> bool:
     response = requests.get(f"{FAST_API_URL}/users/is_newbie/{tg_id}", headers=headers)
     answer = response.json()
-    return answer
+    return answer["is_newbie"]
 
 
 async def add_user(tg_id: str, username: str):
@@ -59,29 +59,18 @@ async def add_user(tg_id: str, username: str):
 async def get_tasks():
     response = requests.get(f"{FAST_API_URL}/tasks/get_tasks", headers=headers)
     answer = response.json()
-    # print(answer)
     return [Task(**ans) for ans in answer]
 
 
-async def get_task(task_id):
+async def get_task(task_id: int):
     response = requests.get(f"{FAST_API_URL}/tasks/get_task/{task_id}", headers=headers)
-    data = {}
-    if response.status_code == 200:
-        data = response.json()
-        # print(Task(**data))
-    # else:
-    #     print(f"Произошла ошибка: {response.text}")
-    return data
+    return response
 
 
-async def submit_assignment(task_id: int, tg_id: str, mark: int, status: str,
-                            error_message: str, assignment_file: str):
+async def submit_assignment(task_id: int, tg_id: str, assignment_file: str) -> int:
     data = {
       "task_id": task_id,
       "tg_id": tg_id,
-      "mark": mark,
-      "status": status,
-      "error_message": error_message,
       "assignment_file": assignment_file
     }
 

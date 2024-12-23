@@ -1,10 +1,9 @@
 import logging
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func  # Добавить импорт func
 from back.database import get_db
-from back.models import Assignment as AssignmentModel
 from back.schemas.assignment import AssignmentCreate, Assignment as AssignmentSchema
+from back.crud import get_assignments, get_assignment, create_assignment, get_best_results, get_user_assignments_by_task
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 @router.get("/", response_model=list[AssignmentSchema])
 async def read_assignments(db: Session = Depends(get_db)):
     try:
-        assignments = db.query(AssignmentModel).all()
+        assignments = get_assignments(db)
         logger.info("Retrieved all assignments")
         return assignments
     except Exception as e:
@@ -22,10 +21,7 @@ async def read_assignments(db: Session = Depends(get_db)):
 @router.post("/submit_assignment", response_model=dict)
 async def submit_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db)):
     try:
-        new_assignment = AssignmentModel(**assignment.dict())
-        db.add(new_assignment)
-        db.commit()
-        db.refresh(new_assignment)
+        new_assignment = create_assignment(db, assignment)
         logger.info(f"Submitted new assignment with ID {new_assignment.assignment_id}")
         return {"is_ok": True, "err_message": ""}
     except Exception as e:
@@ -34,7 +30,7 @@ async def submit_assignment(assignment: AssignmentCreate, db: Session = Depends(
 
 @router.get("/get_assignment/{assignment_id}", response_model=AssignmentSchema)
 async def read_assignment(assignment_id: int, db: Session = Depends(get_db)):
-    assignment = db.query(AssignmentModel).filter(AssignmentModel.assignment_id == assignment_id).first()
+    assignment = get_assignment(db, assignment_id)
     if not assignment:
         logger.warning(f"Assignment with ID {assignment_id} not found")
         raise HTTPException(status_code=404, detail="Assignment not found")
@@ -42,31 +38,9 @@ async def read_assignment(assignment_id: int, db: Session = Depends(get_db)):
     return assignment
 
 @router.get("/get_results/{tg_id}", response_model=list[AssignmentSchema])
-async def get_best_results(tg_id: str, db: Session = Depends(get_db)):
+async def get_best_results_handler(tg_id: str, db: Session = Depends(get_db)):
     try:
-        subquery = (
-            db.query(
-                AssignmentModel.task_id,
-                func.max(AssignmentModel.mark).label("max_mark"),
-                func.max(AssignmentModel.timestamp).label("latest_timestamp")
-            )
-            .filter(AssignmentModel.tg_id == tg_id)
-            .group_by(AssignmentModel.task_id)
-            .subquery()
-        )
-
-        results = (
-            db.query(AssignmentModel)
-            .join(
-                subquery,
-                (AssignmentModel.task_id == subquery.c.task_id) &
-                (AssignmentModel.mark == subquery.c.max_mark) &
-                (AssignmentModel.timestamp == subquery.c.latest_timestamp)
-            )
-            .filter(AssignmentModel.tg_id == tg_id)
-            .all()
-        )
-
+        results = get_best_results(db, tg_id)
         logger.info(f"Retrieved best results for tg_id {tg_id}")
         return [
             {
@@ -81,19 +55,14 @@ async def get_best_results(tg_id: str, db: Session = Depends(get_db)):
             }
             for result in results
         ]
-
     except Exception as e:
         logger.error(f"Error retrieving best results: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error retrieving best results: {str(e)}")
 
 @router.get("/get_assignments/{task_id}/{tg_id}", response_model=list[AssignmentSchema])
-async def get_user_assignments_by_task(task_id: int, tg_id: str, db: Session = Depends(get_db)):
+async def get_user_assignments_by_task_handler(task_id: int, tg_id: str, db: Session = Depends(get_db)):
     try:
-        assignments = (
-            db.query(AssignmentModel)
-            .filter(AssignmentModel.task_id == task_id, AssignmentModel.tg_id == tg_id)
-            .all()
-        )
+        assignments = get_user_assignments_by_task(db, task_id, tg_id)
         if not assignments:
             logger.warning(f"No assignments found for task_id={task_id} and tg_id={tg_id}")
             raise HTTPException(

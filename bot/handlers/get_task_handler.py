@@ -26,6 +26,9 @@ async def get_task_file(message: Message, bot: Bot, state: FSMContext) -> None:
     if message.document \
         and len(message.document.file_name.split(".")) == 2 \
             and message.document.file_name.endswith((".py", ".csv")):
+
+        mess_id = message.message_id # Get messsage id type int
+
         answer = "💨Обрабатываю ваш запрос..."
         temp_message = await message.reply(answer)
 
@@ -41,10 +44,11 @@ async def get_task_file(message: Message, bot: Bot, state: FSMContext) -> None:
         await bot.download_file(file.file_path, path)
 
         answer = await submit_assignment(task_id=task_id, tg_id=tg_id, assignment_file=path)
+        os.remove(path)
 
         await bot.delete_message(chat_id=message.chat.id,
                                  message_id=temp_message.message_id)
-        await message.answer(f"Результат обработки!: {answer}")
+        await message.reply(text=f"Результат обработки!: {answer}", reply_to_message_id=mess_id)
         await state.set_state(StartStep.MAIN)
     else:
         await message.answer(text="Это не документ", reply_markup=keyboard_start())

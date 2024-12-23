@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 from aiogram.types import Message
 from aiogram import Router, F
 from aiogram.filters import Command
@@ -12,6 +14,8 @@ from bot.utils.requests import is_newbie, add_user
 from bot.text_bot import FULL_INFORMATION, INSTRUCTION
 
 router = Router()
+
+COOLDOWN = 1
 
 
 @router.message(Command("start"))
@@ -31,6 +35,7 @@ async def get_start(message: Message, state: FSMContext) -> None:
 
     await message.answer(text=answer, reply_markup=keyboard_start())
     await state.set_state(StartStep.MAIN)
+    await state.update_data(last_assignment=datetime(year=2024, month=12, day=11))
 
 
 @router.message(StartStep.MAIN and F.text == "Мой профиль")
@@ -48,11 +53,25 @@ async def profile(message: Message, state: FSMContext) -> None:
     await state.set_state(ProfileStep.PROFILE)
 
 
+async def check_last_last_assignment(state: FSMContext) -> int:
+    data = await state.get_data()
+    last_asg = data["last_assignment"]
+    seconds = (datetime.now() - last_asg).total_seconds()
+    if seconds > 60 * COOLDOWN:
+        return 0
+    return int(60 * COOLDOWN - seconds)
+
+
 @router.message(StartStep.MAIN and F.text == "Сдать задание")
 async def send_task(message: Message, state: FSMContext) -> None:
     """Начало сдачи задачи"""
-    await message.answer("Пришли номер задания")
-    await state.set_state(SendTaskSteps.GET_TASK_NUMBER)
+    wait = await check_last_last_assignment(state)
+    if wait == 0:
+        await state.update_data(last_assignment=datetime.now())
+        await message.answer("Пришли номер задания")
+        await state.set_state(SendTaskSteps.GET_TASK_NUMBER)
+    else:
+        await message.answer(f"Перед новой отправкой задания должно пройти еще {wait} секунд")
 
 
 @router.message(StartStep.MAIN and F.text == "Информация")

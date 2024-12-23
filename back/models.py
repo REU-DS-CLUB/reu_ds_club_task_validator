@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, Enum, CheckConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, Enum, CheckConstraint, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -9,6 +9,7 @@ class User(Base):
     tg_id = Column(String, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     auth_timestamp = Column(DateTime, default=datetime.utcnow)
+    is_banned = Column(Boolean, default=False)  # New field
     assignments = relationship("Assignment", back_populates="user")
 
 class Task(Base):

@@ -89,7 +89,8 @@ def create_user(db: Session, user: UserCreate):
     new_user = UserModel(
         tg_id=user.tg_id,
         username=user.username,
-        auth_timestamp=datetime.utcnow()
+        auth_timestamp=datetime.utcnow(),
+        is_banned=user.is_banned  # New field
     )
     db.add(new_user)
     db.commit()

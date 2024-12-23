@@ -6,6 +6,7 @@ from typing import List, Optional
 class UserBase(BaseModel):
     tg_id: str = Field(..., description="Идентификатор пользователя в Telegram (tg_id)")
     username: Optional[str] = Field(None, description="Уникальное имя пользователя в системе")
+    is_banned: bool = Field(False, description="Статус блокировки пользователя")  # New field
 
 
 class UserCreate(UserBase):

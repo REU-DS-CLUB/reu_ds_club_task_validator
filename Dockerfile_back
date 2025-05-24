@@ -1,13 +1,18 @@
 FROM python:3.12.3-slim
 
-WORKDIR /app
-COPY . .
+ARG CONTAINER_HOME
+ENV CONTAINER_HOME=$CONTAINER_HOME
+
+WORKDIR $CONTAINER_HOME
+
+COPY back ./back
+COPY requirements_back.txt ./requirements.txt
 
 RUN apt-get update && \
-    # apt-get install -y build-essential libpq-dev && \
     pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r ./requirements.txt
 
-ENV PYTHONPATH=/app
+ARG FASTAPI_PORT
+ENV FASTAPI_PORT=$FASTAPI_PORT
 
-CMD ["uvicorn", "back.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT uvicorn back.main:app --host 0.0.0.0 --port $FASTAPI_PORT

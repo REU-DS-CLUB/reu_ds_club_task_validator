@@ -1,57 +1,66 @@
-from pydantic import BaseModel, validator
-# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from pydantic import BaseModel, field_validator
+from enum import Enum
 from typing import Optional
 
-class TaskBase(BaseModel):
-    task_name: str
-    task_status: str
-    task_description: str
-    task_type: str
-    task_data: str
-    requirements: str
-    task_data_admin: Optional[str]
-    check_solution_file: Optional[str]
 
-    @validator('task_status')
-    def validate_task_status(cls, v):
-        allowed_statuses = ["prod", "test", "deleted"]
-        if v not in allowed_statuses:
-            raise ValueError(f"Invalid task_status: {v}. Must be one of {allowed_statuses}")
+class TaskStatus(str, Enum):
+    PROD = "prod"
+    TEST = "test"
+    DELETED = "deleted"
+
+
+class TaskType(str, Enum):
+    CSV = "csv"
+    EXECUTABLE = "executable"
+
+
+class TaskBase(BaseModel):
+    task_num: int
+    task_name: str
+    task_status: TaskStatus
+    task_description: Optional[str] = None
+    task_type: TaskType
+    task_data: str
+    task_data_admin: Optional[str] = None
+
+    @field_validator('task_num')
+    def validate_task_num(cls, v):
+        if v <= 0:
+            raise ValueError('Task number must be positive')
         return v
 
-    class Config:
-        orm_mode = True
+    @field_validator('task_name')
+    def validate_task_name(cls, v):
+        if len(v) > 100:
+            raise ValueError('Task name must be less than 100 characters')
+        return v
 
+    @field_validator('task_data')
+    def validate_task_data(cls, v):
+        if not v.endswith(('.csv')):
+            raise ValueError('Task data must be a path to .csv file')
+        return v
 
 
 class TaskCreate(TaskBase):
     pass
 
+
 class TaskUpdate(BaseModel):
+    task_num: Optional[int] = None
     task_name: Optional[str] = None
-    task_status: Optional[str] = None
+    task_status: Optional[TaskStatus] = None
     task_description: Optional[str] = None
-    task_type: Optional[str] = None
+    task_type: Optional[TaskType] = None
     task_data: Optional[str] = None
-    requirements: Optional[str] = None
     task_data_admin: Optional[str] = None
-    check_solution_file: Optional[str] = None
 
-    @validator('task_status')
-    def validate_task_status(cls, v):
-        if v is None:
-            return v
-        allowed_statuses = ["prod", "test", "deleted"]
-        if v not in allowed_statuses:
-            raise ValueError(f"Invalid task_status: {v}. Must be one of {allowed_statuses}")
-        return v
+    _validate_task_name = field_validator('task_name')(TaskBase.validate_task_name)
+    _validate_task_data = field_validator('task_data')(TaskBase.validate_task_data)
 
-
-    class Config:
-        orm_mode = True
 
 class Task(TaskBase):
     task_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

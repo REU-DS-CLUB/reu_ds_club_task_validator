@@ -1,41 +1,87 @@
-version: '3.9'
-
 services:
+
   db:
     image: postgres:15-alpine
-    container_name: fastapi_postgres_db
+    container_name: postgres_db
     restart: always
-    environment:
-      POSTGRES_USER: username
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: testdb
+    healthcheck:
+      test: [ "CMD", "pg_isready", "--username=$POSTGRES_USER", "--port=$POSTGRES_PORT", "--dbname=$POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
-      - "5432:5432"  
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    command:
+      - -p ${POSTGRES_PORT}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data:rw
     networks:
-      - fastapi_network
+      - app_network
 
-  app:
+  back:
     build:
       context: .
       dockerfile: Dockerfile_back
-    container_name: fastapi_app
+      args:
+        - FASTAPI_PORT=${FASTAPI_PORT}
+        - CONTAINER_HOME=${CONTAINER_HOME}
+    container_name: fastapi_back
     restart: always
     environment:
-      DATABASE_URL: postgres://yourusername:yourpassword@db:5432/yourdatabase
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      CONTAINER_HOME: ${CONTAINER_HOME}
     ports:
-      - "8000:8000"  
-    volumes:
-      - .:/app  
+      - ${FASTAPI_PORT}:${FASTAPI_PORT}
     depends_on:
-      - db  
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${FASTAPI_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ${HOST_HOME}/tasks:${CONTAINER_HOME}/tasks:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    #- /home/admin/tasks:/app/tasks:rw
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - fastapi_network
+      - app_network
+
+  #bot:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile_bot
+  #    args:
+  #       - CONTAINER_HOME=${CONTAINER_HOME}
+  #  container_name: bot
+  #  environment:
+  #    BOT_TOKEN: ${BOT_TOKEN}
+  #  ports:
+  #    - ${BOT_PORT}:${BOT_PORT}
+  #  depends_on:
+  #    db:
+  #      condition: service_healthy
+  #    back:
+  #      condition: service_started
+  #  networks:
+  #    - app_network
 
 volumes:
-  postgres_data:  
+  postgres_data:
 
 networks:
-  fastapi_network:
+  app_network:
     driver: bridge

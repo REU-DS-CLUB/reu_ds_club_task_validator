@@ -1,4 +1,15 @@
-FROM ubuntu:latest
-LABEL authors="artemmmichurin"
+FROM python:3.12.3-slim
 
-ENTRYPOINT ["top", "-b"]
+ARG CONTAINER_HOME
+ENV CONTAINER_HOME=$CONTAINER_HOME
+
+WORKDIR $CONTAINER_HOME
+
+COPY bot ./bot
+COPY requirements_bot.txt ./requirements.txt
+
+RUN apt-get update && \
+    pip install --upgrade pip && \
+    pip install -r ./requirements.txt
+
+ENTRYPOINT python bot/main.py

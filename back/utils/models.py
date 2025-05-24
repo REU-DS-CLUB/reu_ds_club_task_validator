@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -10,6 +11,7 @@ class User(Base):
     username = Column(String, unique=True)
     auth_timestamp = Column(DateTime, default=datetime.utcnow)
     assignments = relationship("Assignment", back_populates="user")
+
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -20,11 +22,10 @@ class Task(Base):
     task_description = Column(Text)
     task_type = Column(String)
     task_data = Column(String)
-    requirements = Column(Text)
     task_data_admin = Column(String)
-    check_solution_file = Column(String)
 
     assignments = relationship("Assignment", back_populates="task")
+
 
 class Assignment(Base):
     __tablename__ = "assignments"
